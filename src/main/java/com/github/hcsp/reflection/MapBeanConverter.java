@@ -1,5 +1,11 @@
 package com.github.hcsp.reflection;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +18,29 @@ public class MapBeanConverter {
     //  2. 通过反射获得它包含的所有名为getXXX/isXXX，且无参数的方法（即getter方法）
     //  3. 通过反射调用这些方法并将获得的值存储到Map中返回
     public static Map<String, Object> beanToMap(Object bean) {
-        return null;
+        Map<String,Object> map = new HashMap<>();
+        Class beanClass = bean.getClass();
+//        Field[] fields = beanClass.getDeclaredFields();
+        Method[] methods = beanClass.getDeclaredMethods();
+        System.out.println(Arrays.toString(methods));
+        for (Method method :
+                methods) {
+            String methodName = method.getName();
+            Boolean isStartWithGetorIs = methodName.startsWith("get") || methodName.startsWith("is");
+            int methodParameterNumber = method.getParameterTypes().length;
+            if (methodParameterNumber == 0 && isStartWithGetorIs) {
+//                    System.out.println(methodName);
+//                try {
+//                    map.put(methodName,method.invoke(beanClass));
+//                } catch (IllegalAccessException e) {
+//                    throw new RuntimeException(e);
+//                } catch (InvocationTargetException e) {
+//                    throw new RuntimeException(e);
+//                }
+            }
+        }
+//        System.out.println(map.values());
+        return map;
     }
 
     // 传入一个遵守Java Bean约定的Class和一个Map，生成一个该对象的实例
@@ -32,10 +60,10 @@ public class MapBeanConverter {
         bean.setName("AAAAAAAAAAAAAAAAAAA");
         System.out.println(beanToMap(bean));
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", 123);
-        map.put("name", "ABCDEFG");
-        System.out.println(mapToBean(DemoJavaBean.class, map));
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("id", 123);
+//        map.put("name", "ABCDEFG");
+//        System.out.println(mapToBean(DemoJavaBean.class, map));
     }
 
     public static class DemoJavaBean {
@@ -53,6 +81,10 @@ public class MapBeanConverter {
         }
 
         public Integer getId() {
+            return id;
+        }
+
+        public Integer isGetId() {
             return id;
         }
 
